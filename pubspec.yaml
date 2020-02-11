@@ -17,7 +17,6 @@ dev_dependencies:
     sdk: flutter
 
 
-
 # The following section is specific to Flutter.
 flutter:
 
@@ -25,8 +24,8 @@ flutter:
 
   assets:
     - assets/images/avatar.png
-    - assets/Images/Header.jpg
-    - assets/Images/SplashBackground.jpg
+    - assets/images/header.jpg
+    - assets/images/splashbackground.jpg
 
   fonts:
     - family: JFFlat

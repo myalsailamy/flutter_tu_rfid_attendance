@@ -27,7 +27,7 @@ class LoginScreen extends StatelessWidget {
                   decoration: BoxDecoration(
                     image: DecorationImage(
                       // صورة صفحة تسجيل الدخول التي بالأعلى
-                      image: AssetImage("assets/Images/Header.jpg"),
+                      image: AssetImage("assets/images/header.jpg"),
                       // جعل مقاس الصوره تغطي المربع المرسوم
                       fit: BoxFit.fill,
                     ),
