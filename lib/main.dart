@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:tu_rfid_attendance/Screens/LoginScreen.dart';
-
-import 'ProjectTheme.dart';
-import 'Screens/HomePage.dart';
+import 'Screens/login_screen.dart';
+import 'Screens/home_screen.dart';
+import 'screens/user_info_screen.dart';
+import 'helper/project_theme.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,12 +26,13 @@ class MyApp extends StatelessWidget {
       locale: Locale("ar", "SA"), // OR Locale('ar', 'AE') OR Other RTL locales,
 
       // الصفحة الرئيسية في التطبيق
-      home: LoginScreen(primaryColor: Color(0xFF4aa0d5)),
-      // initialRoute: HomePage.id,
+      home: LoginScreen(),
+      // MinitialRoute: HomePage.id,
       // رسم خريطة الموقع من أجل التنقل بين صفحات التطبيق
       routes: {
         HomePage.id: (context) => HomePage(),
-//        '/first': (context) => Screen1(),
+
+        UserInfoScreen.id: (context) => UserInfoScreen(),
 //        '/second': (context) => Screen2(),
       },
     );

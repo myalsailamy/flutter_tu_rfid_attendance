@@ -1,42 +1,125 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+// مكتبة أنزلناها من الانترنت لإظهار رسالة على الشاشة
+import 'package:fluttertoast/fluttertoast.dart';
+// كلاس قمنا بكتابته يخزن القيم في الجهاز و يسترجعها لنستخدمها في تطبيقنا
+import '../helper/save_data.dart';
+import '../screens/home_screen.dart';
+// Object بيانات المستخدم و الذي سيحول من Json الى Object  و العكس
+import '../services/user_info.dart';
+// ادراج الكلاس الي قمنا بتوليده من
+import '../services/login_user.dart';
+// ادراج المكتبه التي نضع بها قيم ثابته على مستوى المشروع
+import '../helper/const.dart';
+// ادراج الكلاس الذي قمنا بتحديد ثيم التطبيق الخاص بنا من خطوط و ألوان ...الخ
+import '../helper/project_theme.dart';
+// قمنا بادراج حزمة المكتبة التي سوف تساعدنا في طلب البيانات من ال api و اعطينها اسم مختصر http
+import 'package:http/http.dart' as http;
 
-import '../ProjectTheme.dart';
+import 'forgot_password_screen.dart';
 
-class LoginScreen extends StatelessWidget {
-  final Color primaryColor;
+// شاشة تسجيل الدخول
+class LoginScreen extends StatefulWidget {
+  // قمنا بتعريف key كإسم للصفحة من أجل استدعاء الشاشاه للانتقال اليها
+  static const id = "login_screen";
 
-  LoginScreen({Key key, this.primaryColor});
+  LoginScreen();
+  @override
+  _LoginScreenState createState() => _LoginScreenState();
+}
 
+class _LoginScreenState extends State<LoginScreen> {
+  // قمنا بتعريف كنترول لحقل الاسم من أجل تسهيل أخذ البيانات من الحقل
+  final userNameController = TextEditingController();
+  // قمنا بتعريف كنترول لحقل الرقم السري من أجل تسهيل أخذ البيانات من الحقل
+  final passwordController = TextEditingController();
+  // متغير يحفظ بيانات المستخدم الحالي في حالة قام بوضع صح على تذكرني
+  bool rememberMe = false;
+
+  // عند بداية تشغيل شاشة تسجيل الدخول
+  @override
+  void initState() {
+    super.initState();
+    // جلب اسم المستخدم اذا كان سجل دخوله من قبل على التطبيق
+    // ووضعه في حقل اسم المستخدم
+    getUserNamePreference().then((String userName) {
+      userNameController.text = userName;
+    });
+  }
+
+  // فكشن سوف تتواصل مع قاعدة البيانات لتسجيل الدخول
+  Future<UserInfo> login() async {
+    showToastMessage("جاري تسجيل الدخول");
+    // عرفنا كائن تسجيل دخول سوف يحوي اسم المستخدم و كلمة المرور من أجل ارسالها لل api
+    LoginUser loginUser = LoginUser(
+        userName: userNameController.text, password: passwordController.text);
+    // تعريف طلب لرابط ال api
+    final response = await http.post('$ApiURL/Users',
+        // البيانات التي يتضمنها الطلب تكون بصيغة json
+        headers: {HttpHeaders.contentTypeHeader: 'application/json'},
+        //  ,تحويل كائن المستخدم الى نص من نوع Json و نضعه في ال body
+        body: loginUserToJson(loginUser));
+    // رقم 200 معناه بانه تم التسجيل بنجاح ورجع ببيانات الموظف
+    if (response.statusCode == 200) {
+      saveUserInfoAsJson(response.body);
+      // userInfo ارجاع بيانات المستخدم الذي سجل الدخول و تحويلها من بيانات بصيغة Json  الى كائن من نوع
+      var userInfo = userInfoFromJson(response.body);
+
+      // يسجل اسم المستخدم من أجل عدم كتابته كل مره
+      saveUserNamePreference(loginUser.userName);
+
+      // بعد نجاح تسجيل الدخول يتم توجيه المستخدم للشاشة الرئيسية
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+        //  ارسال بيانات المستخدم الذي سجل دخوله الى كود الواجهه الأساسية
+        return HomePage(currentUserInfo: userInfo);
+      }));
+    } else if (response.statusCode == 404) {
+      showToastMessage("اسم المستخدم أو كلمة المرور غير صحيحه");
+    } else {
+      showToastMessage("فضلاً تحقق من الشبكة");
+    }
+  }
+
+// فكشن تقوم باظهار الرسائل على الشاشة مثل رسالة خطأ او تم تسجيل الدخول
+  void showToastMessage(String message) {
+    Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 1);
+  }
+
+  // هيكل شاشة تسجيل الدخول مثل اسم المستخدم و كلمة المرور
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
+        // محتوى الصفحة سيكون شاشة تقبل التحريك للأسفل Scroll لانه عند ادخال النص سوف تظهر لوحة الحروف و تتحرك الشاشة لأعلى
+        body: Builder(
+      builder: (context) => SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
           decoration: BoxDecoration(
             color: Colors.white,
           ),
           child: Column(
+            // جعل عناصر ال Column تبدأ ترتيب المحتوى من أعلى الشاشة
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.max,
             children: <Widget>[
-              // رسم مربع منحني من أسفل من أجل وضع شعار التطبيق بأعلى
-              ClipPath(
-                clipper: MyClipper(),
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      // صورة صفحة تسجيل الدخول التي بالأعلى
-                      image: AssetImage("assets/images/header.jpg"),
-                      // جعل مقاس الصوره تغطي المربع المرسوم
-                      fit: BoxFit.fill,
-                    ),
+              // رسم مربع من أجل وضع شعار التطبيق بأعلى
+              Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    // صورة صفحة تسجيل الدخول التي بالأعلى
+                    image: AssetImage("assets/images/header.jpg"),
+                    // جعل مقاس الصوره تغطي المربع المرسوم
+                    fit: BoxFit.fill,
                   ),
-                  // المحاذاه بالمنتصف
-                  alignment: Alignment.center,
-                  // تحديد مساحة المربع من أعلى  و من أسفل
-                  padding: EdgeInsets.only(top: 150.0, bottom: 100.0),
                 ),
+                // المحاذاه بالمنتصف
+                alignment: Alignment.center,
+                // تحديد مساحة المربع من أعلى  و من أسفل
+                padding: EdgeInsets.only(top: 150.0, bottom: 100.0),
               ),
               // مسافه بين صورة الشعار بالأعلى و حقول تسجيل الدخول
               Padding(
@@ -70,7 +153,9 @@ class LoginScreen extends StatelessWidget {
                     // حقل النص الذي سنطلب من المستخدم ادخال اسم المستخدم به
                     Expanded(
                       child: TextField(
-                        autofocus: true,
+                        // ربطنا الكنترولر الذي عرفناه ببداية الكلاس بالحقل النص
+                        controller: userNameController,
+                        // قمنا بعمل ديكور لشكل الحقل النصي
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'ادخل اسم المستخدم',
@@ -107,6 +192,11 @@ class LoginScreen extends StatelessWidget {
                     Expanded(
                       // حقل النص الذي سنطلب من المستخدم ادخال كلمة المرور به
                       child: TextField(
+                        // لجعل كلمة المرور تظهر نجمات بدلاً من نص
+                        obscureText: true,
+                        // ربطنا الكنترولر الذي عرفناه ببداية الكلاس بالحقل النص
+                        controller: passwordController,
+                        // قمنا بعمل ديكور لشكل الحقل النصي
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           hintText: 'ادخل كلمة المرور',
@@ -121,9 +211,13 @@ class LoginScreen extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.only(right: 15),
                 child: CheckboxListTile(
-                  value: false,
+                  value: rememberMe,
                   activeColor: gold,
-                  onChanged: (value) {},
+                  onChanged: (value) {
+                    setState(() {
+                      rememberMe = value;
+                    });
+                  },
                   title: Text("تذكرني"),
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
@@ -174,7 +268,9 @@ class LoginScreen extends StatelessWidget {
                           ],
                         ),
                         // عند الضغط على زر تسجيل الدخول
-                        onPressed: () => {},
+                        onPressed: () async {
+                          await login();
+                        },
                       ),
                     ),
                   ],
@@ -199,7 +295,13 @@ class LoginScreen extends StatelessWidget {
                             style: TextStyle(color: gold, fontSize: 17),
                           ),
                         ),
-                        onPressed: () => {},
+                        onPressed: () => {
+                          // فتح شاشة استعادة كلمة المرور
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return ForgotPasswordScreen();
+                          })),
+                        },
                       ),
                     ),
                   ],
@@ -209,28 +311,6 @@ class LoginScreen extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-class MyClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path p = new Path();
-    p.lineTo(size.width, 0.0);
-    p.lineTo(size.width, size.height * 0.85);
-    p.arcToPoint(
-      Offset(0.0, size.height * 0.85),
-      radius: const Radius.elliptical(50.0, 10.0),
-      rotation: 0.0,
-    );
-    p.lineTo(0.0, 0.0);
-    p.close();
-    return p;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper oldClipper) {
-    return true;
+    ));
   }
 }
