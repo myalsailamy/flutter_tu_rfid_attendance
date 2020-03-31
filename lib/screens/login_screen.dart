@@ -78,6 +78,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } else {
       showToastMessage("فضلاً تحقق من الشبكة");
     }
+    return null;
   }
 
 // فكشن تقوم باظهار الرسائل على الشاشة مثل رسالة خطأ او تم تسجيل الدخول

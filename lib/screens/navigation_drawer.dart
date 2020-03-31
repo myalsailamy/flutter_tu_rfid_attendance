@@ -5,7 +5,9 @@ import '../screens/about_us_screen.dart';
 import '../screens/login_screen.dart';
 import '../services/user_info.dart';
 
+import 'absences_report_screen.dart';
 import 'create_employee_screen.dart';
+import 'home_screen.dart';
 import 'user_info_screen.dart';
 
 // عرفنا في هذه ويدجت جديده ستكون القائمة الجانبيه للتطبيق
@@ -65,11 +67,26 @@ class NavigationDrawer extends StatelessWidget {
         ListTile(
           leading: IconTheme(
             data: _iconcolor,
+            child: Icon(Icons.home),
+          ),
+          title: Text("الرئيسية", style: _menutextcolor),
+          selected: true,
+          onTap: () {
+            // الانتقال للشاشة عند الضغط على الزر
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return HomePage(currentUserInfo: currentUserInfo);
+            }));
+          },
+        ),
+        ListTile(
+          leading: IconTheme(
+            data: _iconcolor,
             child: Icon(Icons.account_circle),
           ),
           title: Text("الملف الشخصي", style: _menutextcolor),
           selected: true,
           onTap: () {
+            // الانتقال للشاشة عند الضغط على الزر
             Navigator.push(context, MaterialPageRoute(builder: (context) {
               return UserInfoScreen(
                   title: 'بياناتي', currentUserInfo: currentUserInfo);
@@ -85,6 +102,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             title: Text("إضافة موظف", style: _menutextcolor),
             onTap: () {
+              // الانتقال للشاشة عند الضغط على الزر
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return CreateEmployeeScreen(
                   currentUserInfo: currentUserInfo,
@@ -92,6 +110,7 @@ class NavigationDrawer extends StatelessWidget {
               }));
             },
           ),
+          // فحص صلاحية المستخدم الحالي إذا يملك حساب إدارة يسمح بإظهار هذا الخيار في القائمة
           visible: (this.currentUserInfo.role == 'manager') ? true : false,
         ),
         Visibility(
@@ -102,6 +121,7 @@ class NavigationDrawer extends StatelessWidget {
             ),
             title: Text("معلومات الموظفين", style: _menutextcolor),
             onTap: () {
+              // الانتقال للشاشة عند الضغط على الزر
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return EmployeesListScreen(
                   title: currentUserInfo.department,
@@ -110,6 +130,7 @@ class NavigationDrawer extends StatelessWidget {
               }));
             },
           ),
+          // فحص صلاحية المستخدم الحالي إذا يملك حساب إدارة يسمح بإظهار هذا الخيار في القائمة
           visible: (this.currentUserInfo.role == 'manager') ? true : false,
         ),
         Visibility(
@@ -123,8 +144,16 @@ class NavigationDrawer extends StatelessWidget {
               child: Icon(Icons.assessment),
             ),
             title: Text("تقرير الغياب", style: _menutextcolor),
-            onTap: () {},
+            onTap: () {
+              // الانتقال للشاشة عند الضغط على الزر
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return AbsencesReportScreen(
+                  currentUserInfo: currentUserInfo,
+                );
+              }));
+            },
           ),
+          // فحص صلاحية المستخدم الحالي إذا يملك حساب إدارة يسمح بإظهار هذا الخيار في القائمة
           visible: (this.currentUserInfo.role == 'manager') ? true : false,
         ),
         ListTile(
@@ -134,6 +163,7 @@ class NavigationDrawer extends StatelessWidget {
           ),
           title: Text("عن التطبيق", style: _menutextcolor),
           onTap: () {
+            // الانتقال للشاشة عند الضغط على الزر
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => AboutUs()));
           },
@@ -148,6 +178,7 @@ class NavigationDrawer extends StatelessWidget {
           ),
           title: Text("تسجيل الخروج", style: _menutextcolor),
           onTap: () {
+            // الانتقال للشاشة عند الضغط على الزر
             Navigator.pushReplacement(context,
                 MaterialPageRoute(builder: (context) {
               return LoginScreen();

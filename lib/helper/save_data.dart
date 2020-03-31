@@ -1,7 +1,6 @@
 // ادراج المكتبه التي ستقوم بحفظ و تخزين البيانات على الجهاز الحالي
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tu_rfid_attendance/services/user_info.dart';
-import 'const.dart';
 
 //حفظ و تذكر الاسم الخاص بالمستخدم على الجهاز
 Future<bool> saveUserNamePreference(String userName) async {

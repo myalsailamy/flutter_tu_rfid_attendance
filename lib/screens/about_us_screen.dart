@@ -33,8 +33,7 @@ class AboutUs extends StatelessWidget {
             ),
             getInfoCard('إصدار التطبيق', '1.0.2', Icons.settings_applications),
             // كرت المعلومات قمنا بانشاء عنصر جديد وارسلنا له البيانات
-            getInfoCard(
-                'المطورون', 'رهام الحارثي & وسام البخاري', Icons.person),
+            getInfoCard('المطورون', 'طالبات د.صالح', Icons.person),
             getInfoCard('بريد التواصل', 'tu_developers@gmail.com', Icons.email),
             SizedBox(
               height: 20,

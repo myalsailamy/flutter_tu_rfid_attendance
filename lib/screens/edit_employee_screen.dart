@@ -10,7 +10,6 @@ import '../helper/project_theme.dart';
 import 'package:http/http.dart' as http;
 import '../services/user_info.dart';
 import '../services/employee_info.dart';
-import 'home_screen.dart';
 
 class EditEmployeeInfo extends StatefulWidget {
   // قمنا بتعريف key كإسم للصفحة تعديل معلومات المستخدم من أجل استدعاء الشاشه للانتقال اليها
@@ -133,6 +132,7 @@ class _EditEmployeeInfoState extends State<EditEmployeeInfo> {
     if (response.statusCode == 200) {
       // الرجوع الى الرئيسيه بعد تعديل الموظف
       Navigator.of(context).popUntil((route) => route.isFirst);
+      return true;
     } else {
       return false;
     }
